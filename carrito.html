@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrito | Moda Urbana</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">MODA <span>URBANA</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="catalogo.html">Catálogo</a></li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link position-relative" href="carrito.html">
+              <i class="bi bi-bag fs-5"></i>
+              <span class="cart-badge">0</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-5">
+    <h2 class="fw-bold mb-4">Carrito de compras</h2>
+    
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div id="lista-carrito">
+          <!-- Items -->
+        </div>
+        <div id="carrito-vacio" class="text-center py-5 d-none">
+          <i class="bi bi-bag-x fs-1 text-muted"></i>
+          <p class="mt-3 text-muted">Tu carrito está vacío</p>
+          <a href="catalogo.html" class="btn btn-dark-custom">Ir al catálogo</a>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm sticky-top" style="top: 90px;">
+          <div class="card-body">
+            <h5 class="fw-bold mb-3">Resumen</h5>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Subtotal</span>
+              <span id="subtotal">$0</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Envío</span>
+              <span id="envio">$0</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2 text-success" id="envio-gratis-msg" style="display:none !important;">
+              <span>¡Envío gratis!</span>
+              <span></span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between fw-bold fs-5 mb-3">
+              <span>Total</span>
+              <span id="total">$0</span>
+            </div>
+            <a href="checkout.html" class="btn btn-gold w-100 btn-lg" id="btn-checkout">
+              Continuar al pago
+            </a>
+            <a href="catalogo.html" class="btn btn-outline-secondary w-100 mt-2">Seguir comprando</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    function renderCarrito() {
+      const carrito = obtenerCarrito();
+      const lista = document.getElementById('lista-carrito');
+      const vacio = document.getElementById('carrito-vacio');
+      const btnCheckout = document.getElementById('btn-checkout');
+
+      if (carrito.length === 0) {
+        lista.innerHTML = '';
+        vacio.classList.remove('d-none');
+        btnCheckout.classList.add('disabled');
+        document.getElementById('subtotal').textContent = formatearPrecio(0);
+        document.getElementById('envio').textContent = formatearPrecio(0);
+        document.getElementById('total').textContent = formatearPrecio(0);
+        return;
+      }
+
+      vacio.classList.add('d-none');
+      btnCheckout.classList.remove('disabled');
+
+      lista.innerHTML = carrito.map((item, index) => `
+        <div class="card border-0 shadow-sm mb-3 cart-item">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-3 col-md-2">
+                <img src="${item.imagen}" alt="${item.nombre}" onerror="this.src='https://via.placeholder.com/90x110'">
+              </div>
+              <div class="col-9 col-md-5">
+                <h6 class="mb-1">${item.nombre}</h6>
+                <small class="text-muted">Talla: ${item.talla} | Color: ${item.color}</small>
+                <div class="mt-1 fw-semibold">${formatearPrecio(item.precio)}</div>
+              </div>
+              <div class="col-6 col-md-3 mt-2 mt-md-0">
+                <div class="input-group input-group-sm" style="max-width:120px;">
+                  <button class="btn btn-outline-secondary" onclick="cambiarCantidad(${index}, -1)">-</button>
+                  <input type="text" class="form-control text-center" value="${item.cantidad}" readonly>
+                  <button class="btn btn-outline-secondary" onclick="cambiarCantidad(${index}, 1)">+</button>
+                </div>
+              </div>
+              <div class="col-6 col-md-2 text-end mt-2 mt-md-0">
+                <div class="fw-bold">${formatearPrecio(item.precio * item.cantidad)}</div>
+                <button class="btn btn-link text-danger p-0 small" onclick="quitarItem(${index})">
+                  <i class="bi bi-trash"></i> Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      actualizarResumen();
+    }
+
+    function cambiarCantidad(index, delta) {
+      const carrito = obtenerCarrito();
+      const nueva = carrito[index].cantidad + delta;
+      actualizarCantidad(index, nueva);
+      renderCarrito();
+    }
+
+    function quitarItem(index) {
+      eliminarDelCarrito(index);
+      renderCarrito();
+      mostrarAlerta('Producto eliminado', 'info');
+    }
+
+    function actualizarResumen() {
+      const subtotal = calcularSubtotal();
+      const envio = calcularEnvio(subtotal);
+      const total = calcularTotal(subtotal, envio);
+
+      document.getElementById('subtotal').textContent = formatearPrecio(subtotal);
+      document.getElementById('envio').textContent = envio === 0 ? 'Gratis' : formatearPrecio(envio);
+      document.getElementById('total').textContent = formatearPrecio(total);
+
+      const msg = document.getElementById('envio-gratis-msg');
+      if (subtotal >= 999) {
+        msg.style.display = 'flex';
+      } else {
+        msg.style.display = 'none';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', renderCarrito);
+  </script>
+</body>
+</html>

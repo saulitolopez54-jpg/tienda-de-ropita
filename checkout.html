@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | Moda Urbana</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <style>
+    .step { display: none; }
+    .step.active { display: block; }
+    .payment-option {
+      border: 2px solid #dee2e6;
+      border-radius: 10px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .payment-option:hover, .payment-option.selected {
+      border-color: #c9a86c;
+      background: #fdfaf5;
+    }
+    .payment-option input { display: none; }
+  </style>
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">MODA <span>URBANA</span></a>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <!-- Progress -->
+        <div class="d-flex justify-content-between mb-4">
+          <div class="text-center flex-fill">
+            <div class="rounded-circle bg-dark text-white d-inline-flex align-items-center justify-content-center" style="width:36px;height:36px;" id="step-ind-1">1</div>
+            <div class="small mt-1">Dirección</div>
+          </div>
+          <div class="text-center flex-fill">
+            <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center" style="width:36px;height:36px;" id="step-ind-2">2</div>
+            <div class="small mt-1">Envío</div>
+          </div>
+          <div class="text-center flex-fill">
+            <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center" style="width:36px;height:36px;" id="step-ind-3">3</div>
+            <div class="small mt-1">Pago</div>
+          </div>
+          <div class="text-center flex-fill">
+            <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center" style="width:36px;height:36px;" id="step-ind-4">4</div>
+            <div class="small mt-1">Confirmar</div>
+          </div>
+        </div>
+
+        <!-- STEP 1: Dirección -->
+        <div class="step active" id="step1">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <h4 class="fw-bold mb-3">Dirección de entrega</h4>
+              <form id="form-direccion">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label">Nombre completo</label>
+                    <input type="text" class="form-control" id="dir-nombre" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Teléfono</label>
+                    <input type="tel" class="form-control" id="dir-tel" required>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Calle y número</label>
+                    <input type="text" class="form-control" id="dir-calle" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Colonia</label>
+                    <input type="text" class="form-control" id="dir-colonia" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Código postal</label>
+                    <input type="text" class="form-control" id="dir-cp" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Ciudad</label>
+                    <input type="text" class="form-control" id="dir-ciudad" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Estado</label>
+                    <input type="text" class="form-control" id="dir-estado" required>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-gold mt-4" onclick="irPaso(2)">Continuar</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: Método de envío -->
+        <div class="step" id="step2">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <h4 class="fw-bold mb-3">Método de envío</h4>
+              <div class="payment-option mb-3 selected" onclick="seleccionarEnvio(this, 'estandar')">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <strong>Envío estándar</strong>
+                    <div class="small text-muted">3-5 días hábiles</div>
+                  </div>
+                  <div class="fw-bold" id="precio-estandar">$99</div>
+                </div>
+              </div>
+              <div class="payment-option mb-3" onclick="seleccionarEnvio(this, 'express')">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <strong>Envío express</strong>
+                    <div class="small text-muted">1-2 días hábiles</div>
+                  </div>
+                  <div class="fw-bold">$149</div>
+                </div>
+              </div>
+              <div class="d-flex gap-2 mt-4">
+                <button class="btn btn-outline-secondary" onclick="irPaso(1)">Atrás</button>
+                <button class="btn btn-gold" onclick="irPaso(3)">Continuar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: Método de pago -->
+        <div class="step" id="step3">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <h4 class="fw-bold mb-3">Método de pago</h4>
+              
+              <div class="payment-option mb-3 selected" onclick="seleccionarPago(this, 'oxxo')">
+                <div class="d-flex align-items-center gap-3">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Oxxo_Logo.svg/200px-Oxxo_Logo.svg.png" 
+                       alt="OXXO" style="height:30px;" onerror="this.style.display='none'">
+                  <div>
+                    <strong>OXXO</strong>
+                    <div class="small text-muted">Paga en efectivo en cualquier tienda OXXO</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="payment-option mb-3" onclick="seleccionarPago(this, 'bbva')">
+                <div class="d-flex align-items-center gap-3">
+                  <strong style="color:#004481;">BBVA</strong>
+                  <div>
+                    <strong>Transferencia BBVA</strong>
+                    <div class="small text-muted">Transferencia bancaria SPEI</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="payment-option mb-3" onclick="seleccionarPago(this, 'paypal')">
+                <div class="d-flex align-items-center gap-3">
+                  <i class="bi bi-paypal fs-3" style="color:#003087;"></i>
+                  <div>
+                    <strong>PayPal</strong>
+                    <div class="small text-muted">Paga con tu cuenta PayPal</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex gap-2 mt-4">
+                <button class="btn btn-outline-secondary" onclick="irPaso(2)">Atrás</button>
+                <button class="btn btn-gold" onclick="irPaso(4)">Continuar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: Confirmación / Ticket -->
+        <div class="step" id="step4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <h4 class="fw-bold mb-3">Confirmar pedido</h4>
+              
+              <div id="resumen-final" class="mb-4">
+                <!-- Se llena con JS -->
+              </div>
+
+              <div id="ticket-oxxo" class="d-none">
+                <div class="oxxo-ticket text-center">
+                  <h5 class="text-danger fw-bold">OXXO</h5>
+                  <p class="small mb-1">Presenta este código en caja</p>
+                  
+                  <div class="barcode-fallback" id="barcode-visual"></div>
+                  <div class="fw-bold mb-2" id="codigo-barras-num"></div>
+                  
+                  <div class="text-start mt-3">
+                    <div class="d-flex justify-content-between">
+                      <span>Monto a pagar:</span>
+                      <strong id="oxxo-monto"></strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                      <span>Vencimiento:</span>
+                      <strong id="oxxo-vencimiento"></strong>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                      <span>Referencia:</span>
+                      <strong id="oxxo-referencia" class="text-break"></strong>
+                    </div>
+                  </div>
+                  
+                  <p class="small text-muted mt-3 mb-0">
+                    Tienes 3 días para realizar el pago. Una vez pagado, tu pedido se procesará automáticamente.
+                  </p>
+                </div>
+              </div>
+
+              <div id="ticket-otro" class="d-none">
+                <div class="alert alert-success">
+                  <h5 class="alert-heading">¡Pedido confirmado!</h5>
+                  <p class="mb-0">Número de pedido: <strong id="num-pedido"></strong></p>
+                  <p class="mb-0">Guarda este número para dar seguimiento a tu compra.</p>
+                </div>
+              </div>
+
+              <!-- Botón de WhatsApp -->
+              <div id="whatsapp-box" class="d-none mt-4 text-center">
+                <p class="fw-semibold mb-2">¿Quieres recibir la confirmación en tu WhatsApp?</p>
+                <a id="btn-whatsapp" href="#" target="_blank" class="btn btn-success btn-lg">
+                  <i class="bi bi-whatsapp me-2"></i> Enviar confirmación por WhatsApp
+                </a>
+                <p class="small text-muted mt-2">Se abrirá WhatsApp con el resumen de tu pedido listo para enviar.</p>
+              </div>
+
+              <div class="d-flex gap-2 mt-4" id="botones-final">
+                <button class="btn btn-outline-secondary" onclick="irPaso(3)">Atrás</button>
+                <button class="btn btn-gold" id="btn-confirmar" onclick="confirmarPedido()">Confirmar y pagar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    let pasoActual = 1;
+    let metodoEnvio = 'estandar';
+    let metodoPago = 'oxxo';
+    let datosDireccion = {};
+
+    // Verificar carrito
+    document.addEventListener('DOMContentLoaded', () => {
+      if (obtenerCarrito().length === 0) {
+        window.location.href = 'carrito.html';
+        return;
+      }
+      // Prellenar si hay usuario
+      const user = obtenerUsuarioActual();
+      if (user) {
+        document.getElementById('dir-nombre').value = user.nombre || '';
+      }
+      // Actualizar precio envío si es gratis
+      const sub = calcularSubtotal();
+      if (sub >= 999) {
+        document.getElementById('precio-estandar').textContent = 'Gratis';
+      }
+    });
+
+    function irPaso(n) {
+      if (n === 2) {
+        // Validar dirección
+        const form = document.getElementById('form-direccion');
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+        datosDireccion = {
+          nombre: document.getElementById('dir-nombre').value,
+          telefono: document.getElementById('dir-tel').value,
+          calle: document.getElementById('dir-calle').value,
+          colonia: document.getElementById('dir-colonia').value,
+          cp: document.getElementById('dir-cp').value,
+          ciudad: document.getElementById('dir-ciudad').value,
+          estado: document.getElementById('dir-estado').value
+        };
+      }
+
+      // Ocultar todos
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step' + n).classList.add('active');
+
+      // Actualizar indicadores
+      for (let i = 1; i <= 4; i++) {
+        const ind = document.getElementById('step-ind-' + i);
+        if (i <= n) {
+          ind.classList.remove('bg-secondary');
+          ind.classList.add('bg-dark');
+        } else {
+          ind.classList.remove('bg-dark');
+          ind.classList.add('bg-secondary');
+        }
+      }
+
+      if (n === 4) {
+        mostrarResumen();
+      }
+      pasoActual = n;
+    }
+
+    function seleccionarEnvio(el, metodo) {
+      document.querySelectorAll('#step2 .payment-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      metodoEnvio = metodo;
+    }
+
+    function seleccionarPago(el, metodo) {
+      document.querySelectorAll('#step3 .payment-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      metodoPago = metodo;
+    }
+
+    function mostrarResumen() {
+      const carrito = obtenerCarrito();
+      const subtotal = calcularSubtotal();
+      const envio = calcularEnvio(subtotal, metodoEnvio);
+      const total = calcularTotal(subtotal, envio);
+
+      let html = `
+        <div class="small text-muted mb-2">Dirección de entrega</div>
+        <p class="mb-3">${datosDireccion.nombre}<br>
+        ${datosDireccion.calle}, ${datosDireccion.colonia}<br>
+        ${datosDireccion.cp} ${datosDireccion.ciudad}, ${datosDireccion.estado}<br>
+        Tel: ${datosDireccion.telefono}</p>
+        
+        <div class="small text-muted mb-2">Productos</div>
+        <ul class="list-unstyled mb-3">
+          ${carrito.map(i => `<li class="d-flex justify-content-between">
+            <span>${i.nombre} (${i.talla}) x${i.cantidad}</span>
+            <span>${formatearPrecio(i.precio * i.cantidad)}</span>
+          </li>`).join('')}
+        </ul>
+        <hr>
+        <div class="d-flex justify-content-between">
+          <span>Subtotal</span><span>${formatearPrecio(subtotal)}</span>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span>Envío (${metodoEnvio})</span><span>${envio === 0 ? 'Gratis' : formatearPrecio(envio)}</span>
+        </div>
+        <div class="d-flex justify-content-between fw-bold fs-5 mt-2">
+          <span>Total</span><span>${formatearPrecio(total)}</span>
+        </div>
+        <div class="mt-2 small">Método de pago: <strong>${metodoPago.toUpperCase()}</strong></div>
+      `;
+      document.getElementById('resumen-final').innerHTML = html;
+    }
+
+    function confirmarPedido() {
+      const carrito = obtenerCarrito();
+      const subtotal = calcularSubtotal();
+      const envio = calcularEnvio(subtotal, metodoEnvio);
+      const total = calcularTotal(subtotal, envio);
+      const numPedido = generarNumeroPedido();
+
+      // Guardar pedido
+      const pedido = {
+        id: numPedido,
+        fecha: new Date().toISOString(),
+        items: [...carrito],
+        direccion: datosDireccion,
+        envio: metodoEnvio,
+        pago: metodoPago,
+        subtotal,
+        costoEnvio: envio,
+        total,
+        estado: metodoPago === 'oxxo' ? 'pendiente_pago' : 'confirmado'
+      };
+
+      let pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
+      pedidos.push(pedido);
+      localStorage.setItem('pedidos', JSON.stringify(pedidos));
+
+      const user = obtenerUsuarioActual();
+      if (user) {
+        user.pedidos = user.pedidos || [];
+        user.pedidos.push(numPedido);
+        actualizarUsuario(user);
+      }
+
+      // Generar mensaje de WhatsApp
+      const itemsTexto = carrito.map(i => `• ${i.nombre} (${i.talla}/${i.color}) x${i.cantidad} - ${formatearPrecio(i.precio * i.cantidad)}`).join('%0A');
+      const mensajeWA = `¡Hola! 👋%0A%0A*Confirmación de pedido - Moda Urbana*%0A%0A📦 *Pedido:* ${numPedido}%0A📅 *Fecha:* ${new Date().toLocaleDateString('es-MX')}%0A%0A*Productos:*%0A${itemsTexto}%0A%0A💰 *Subtotal:* ${formatearPrecio(subtotal)}%0A🚚 *Envío:* ${envio === 0 ? 'Gratis' : formatearPrecio(envio)}%0A✅ *Total:* ${formatearPrecio(total)}%0A%0A📍 *Entrega:*%0A${datosDireccion.nombre}%0A${datosDireccion.calle}, ${datosDireccion.colonia}%0A${datosDireccion.cp} ${datosDireccion.ciudad}, ${datosDireccion.estado}%0ATel: ${datosDireccion.telefono}%0A%0A💳 *Pago:* ${metodoPago.toUpperCase()}%0A%0A¡Gracias por tu compra! 🛍️`;
+
+      // Número del negocio (puedes cambiarlo por el tuyo)
+      const numeroNegocio = '5215512345678'; // Formato: 52 + 1 + 10 dígitos
+      const urlWhatsApp = `https://wa.me/${numeroNegocio}?text=${mensajeWA}`;
+
+      document.getElementById('btn-whatsapp').href = urlWhatsApp;
+
+      vaciarCarrito();
+
+      document.getElementById('botones-final').classList.add('d-none');
+      document.getElementById('btn-confirmar').classList.add('d-none');
+      document.getElementById('whatsapp-box').classList.remove('d-none');
+
+      if (metodoPago === 'oxxo') {
+        document.getElementById('ticket-oxxo').classList.remove('d-none');
+        document.getElementById('oxxo-monto').textContent = formatearPrecio(total);
+        document.getElementById('oxxo-vencimiento').textContent = fechaVencimientoOXXO();
+        document.getElementById('oxxo-referencia').textContent = generarReferenciaOXXO();
+        document.getElementById('codigo-barras-num').textContent = generarCodigoBarras();
+        
+        const barcode = document.getElementById('barcode-visual');
+        barcode.innerHTML = '';
+        for (let i = 0; i < 40; i++) {
+          const bar = document.createElement('div');
+          bar.style.cssText = `display:inline-block;width:${Math.random()>0.5?2:1}px;height:50px;background:#000;margin-right:1px;`;
+          barcode.appendChild(bar);
+        }
+      } else {
+        document.getElementById('ticket-otro').classList.remove('d-none');
+        document.getElementById('num-pedido').textContent = numPedido;
+      }
+
+      mostrarAlerta('¡Pedido realizado con éxito!', 'success');
+    }
+  </script>
+</body>
+</html>
